@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Positioning & Scoring — Four Levels Academy</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --nepc-navy: #0A1A2F;
+            --nepc-navy-light: #1B4079;
+            --nepc-blue: #4DA6FF;
+            --nepc-red: #C8102E;
+            --nepc-green: #9EF01A;
+            --court-blue: #234e8c;
+            --court-gray: #718096;
+            --court-burgundy: #6b0f1a;
+            --team-serve: #9b5de5;
+            --team-return: #00bbf9;
+            --glass: rgba(27, 64, 121, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --success: #28a745;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--nepc-navy);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container { width: 100%; max-width: 650px; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+
+        /* --- HERO INTRO ANIMATION --- */
+        .hero-container {
+            position: relative; width: 100%; height: 240px;
+            background: radial-gradient(circle at center, var(--nepc-navy-light) 0%, var(--nepc-navy) 100%);
+            border-radius: 16px; border: 1px solid var(--glass-border); overflow: hidden;
+            display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .hero-grid {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background-image: linear-gradient(rgba(77, 166, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(77, 166, 255, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px; z-index: 1;
+        }
+
+        .hero-bg-score {
+            position: absolute; font-family: 'Montserrat', sans-serif; font-size: 90px; font-weight: 800;
+            color: rgba(255, 255, 255, 0.03); letter-spacing: 5px; z-index: 2;
+            animation: pulseScore 4s infinite alternate; white-space: nowrap;
+        }
+
+        @keyframes pulseScore { 0% { transform: scale(0.95); color: rgba(255, 255, 255, 0.02); } 100% { transform: scale(1.05); color: rgba(255, 255, 255, 0.06); } }
+
+        .hero-mini-court { width: 75%; aspect-ratio: 44 / 20; border: 2px solid rgba(255,255,255,0.2); position: relative; z-index: 3; }
+        .hm-line { position: absolute; background: rgba(255,255,255,0.2); }
+        .hm-net { left: 50%; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,0.4); transform: translateX(-50%); }
+        .hm-k-left { left: 34.1%; top: 0; bottom: 0; width: 1px; }
+        .hm-k-right { right: 34.1%; top: 0; bottom: 0; width: 1px; }
+        .hm-c-left { left: 0; width: 34.1%; top: 50%; height: 1px; }
+        .hm-c-right { right: 0; width: 34.1%; top: 50%; height: 1px; }
+
+        .hero-dot { position: absolute; width: 12px; height: 12px; border-radius: 50%; transform: translate(-50%, -50%); }
+        .hd-serve { background: var(--team-serve); box-shadow: 0 0 8px var(--team-serve); }
+        .hd-return { background: var(--team-return); box-shadow: 0 0 8px var(--team-return); }
+
+        #hero-server { animation: heroServer 6s infinite cubic-bezier(0.4, 0, 0.2, 1); }
+        #hero-server-partner { animation: heroServerPartner 6s infinite cubic-bezier(0.4, 0, 0.2, 1); }
+        #hero-returner { animation: heroReturner 6s infinite cubic-bezier(0.4, 0, 0.2, 1); }
+        #hero-returner-partner { left: 31%; top: 25%; }
+
+        @keyframes heroServer { 0%, 32% { left: 105%; top: 25%; } 48%, 90% { left: 69%; top: 25%; } 95%, 100% { left: 105%; top: 25%; } }
+        @keyframes heroServerPartner { 0%, 32% { left: 105%; top: 75%; } 48%, 90% { left: 69%; top: 75%; } 95%, 100% { left: 105%; top: 75%; } }
+        @keyframes heroReturner { 0%, 16% { left: -5%; top: 75%; } 32%, 90% { left: 31%; top: 75%; } 95%, 100% { left: -5%; top: 75%; } }
+
+        .hero-ball { position: absolute; width: 8px; height: 8px; background: var(--nepc-green); border-radius: 50%; box-shadow: 0 0 12px var(--nepc-green); z-index: 4; transform: translate(-50%, -50%); animation: heroBall 6s infinite cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes heroBall { 0% { left: 105%; top: 25%; opacity: 1; } 16% { left: -5%; top: 75%; opacity: 1; } 32% { left: 105%; top: 25%; opacity: 1; } 48% { left: 31%; top: 25%; opacity: 1; } 64% { left: 69%; top: 75%; opacity: 1; } 80% { left: 31%; top: 75%; opacity: 1; } 90% { left: 69%; top: 25%; opacity: 0; } 100% { left: 105%; top: 25%; opacity: 0; } }
+
+        /* --- UI COMPONENTS --- */
+        header { border-left: 6px solid var(--nepc-red); padding-left: 16px; margin-bottom: 0px; }
+        h1 { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 20px; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .slim-instruction {
+            background: var(--glass); border-radius: 12px; padding: 12px 16px; border: 1px solid var(--glass-border);
+            display: flex; flex-direction: column; justify-content: center; text-align: center; margin-bottom: 4px;
+        }
+        .step-label { color: var(--nepc-blue); font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+        .instruction-text { font-size: 15px; line-height: 1.4; color: rgba(255,255,255,0.95); font-weight: 600; }
+
+        /* --- COURT SYSTEM --- */
+        .court-wrapper { width: 100%; padding: 40px 50px; background: var(--court-gray); border-radius: 16px; position: relative; box-shadow: inset 0 0 30px rgba(0,0,0,0.3); margin: 5px 0; }
+        .court-container { width: 100%; aspect-ratio: 44 / 20; border: 2px solid white; position: relative; background: var(--court-blue); overflow: visible; }
+        
+        .kitchen-area { position: absolute; top: 0; bottom: 0; width: 15.9%; background: var(--court-burgundy); }
+        .kitchen-left-side { left: 34.1%; }
+        .kitchen-right-side { right: 34.1%; }
+        
+        .kitchen-line { position: absolute; top: 0; bottom: 0; width: 2px; background: white; z-index: 5; }
+        .kl-left { left: 34.1%; transform: translateX(-50%); }
+        .kl-right { right: 34.1%; transform: translateX(50%); }
+
+        .net-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: white; z-index: 6; transform: translateX(-50%); }
+        .center-line { position: absolute; height: 2px; background: white; top: 50%; width: 34.1%; transform: translateY(-50%); }
+        .center-left { left: 0; } .center-right { right: 0; }
+
+        .player {
+            position: absolute; width: 28px; height: 28px; border-radius: 50%; background: #fff; border: 2px solid var(--nepc-navy);
+            z-index: 20; transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 800; color: white; transform: translate(-50%, -50%);
+        }
+        #p1, #p2 { background: var(--team-serve); border-color: rgba(255,255,255,0.5); }
+        #p3, #p4 { background: var(--team-return); border-color: rgba(255,255,255,0.5); }
+
+        .ball {
+            position: absolute; width: 14px; height: 14px; background: var(--nepc-green); border-radius: 50%; z-index: 25;
+            box-shadow: 0 0 12px var(--nepc-green); transition: all 0.6s linear; transform: translate(-50%, -50%); display: none;
+        }
+
+        /* --- DYNAMIC VISUAL ELEMENTS --- */
+        .visual-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 15; }
+        
+        .tooltip {
+            position: absolute; background: rgba(10, 26, 47, 0.9); border: 1px solid var(--nepc-blue); color: white;
+            padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; white-space: nowrap;
+            transform: translate(-50%, -35px); opacity: 0; transition: opacity 0.3s, transform 0.3s ease; z-index: 30;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        .tooltip.show { opacity: 1; }
+        .tooltip::after { 
+            content: ''; position: absolute; top: 100%; left: var(--arrow-left, 50%); margin-left: -4px; 
+            border-width: 4px; border-style: solid; border-color: var(--nepc-blue) transparent transparent transparent; 
+            transition: left 0.3s ease;
+        }
+
+        .bounce-ring {
+            position: absolute; width: 40px; height: 40px; border: 3px dashed var(--nepc-green); border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0); opacity: 0; z-index: 10;
+        }
+        @keyframes ping { 0% { transform: translate(-50%, -50%) scale(0.2); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; } }
+
+        .score-popup {
+            position: absolute; font-family: 'Montserrat'; font-size: 32px; font-weight: 800; color: var(--nepc-green);
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8); z-index: 40; transform: translate(-50%, -50%);
+            animation: floatUp 1.5s forwards ease-out; opacity: 0; white-space: nowrap;
+        }
+        @keyframes floatUp { 0% { opacity: 0; transform: translate(-50%, 0) scale(0.5); } 20% { opacity: 1; transform: translate(-50%, -20px) scale(1.2); } 80% { opacity: 1; transform: translate(-50%, -40px) scale(1); } 100% { opacity: 0; transform: translate(-50%, -50px) scale(1); } }
+
+        .fault-popup { color: var(--nepc-red); animation: aggressivePop 1.5s forwards ease-out; }
+        @keyframes aggressivePop { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.1); } 15% { opacity: 1; transform: translate(-50%, -50%) scale(1.4) rotate(-5deg); } 30% { transform: translate(-50%, -50%) scale(1) rotate(5deg); } 45% { transform: translate(-50%, -50%) scale(1.1) rotate(0deg); } 80% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); } }
+
+        /* --- SCORING DISPLAY --- */
+        .score-explanation-card { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 5px; display: none; }
+        .score-box { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; text-align: center; border: 1px solid var(--glass-border); }
+        .score-num { font-family: 'Montserrat'; font-weight: 800; font-size: 24px; color: var(--nepc-blue); transition: color 0.3s, transform 0.3s; }
+        .score-num.highlight { color: var(--nepc-green); transform: scale(1.2); }
+        .score-label { font-size: 10px; text-transform: uppercase; opacity: 0.7; margin-top: 4px; line-height: 1.2; }
+
+        /* --- BUTTONS & CONTROLS --- */
+        .button-group { display: flex; gap: 12px; margin-top: 5px; }
+        .btn {
+            flex: 1; min-height: 56px; border-radius: 12px; border: none; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 15px;
+            text-transform: uppercase; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; color: white;
+        }
+        .btn-primary { background-color: var(--nepc-blue); color: var(--nepc-navy); }
+        .btn-primary:disabled { background-color: #555; color: #888; cursor: not-allowed; }
+        .btn-outline { background: transparent; border: 2px solid var(--nepc-blue); color: var(--nepc-blue); }
+        .btn-answer { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); margin-bottom: 8px; text-transform: none; font-family: 'Inter'; font-weight: 600; font-size: 18px; line-height: 1.3;}
+        .btn:active:not(:disabled) { transform: translateY(2px); }
+
+        .control-btn {
+            width: 100%; margin-top: 10px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border);
+            color: rgba(255, 255, 255, 0.6); padding: 12px; border-radius: 12px; font-family: 'Montserrat', sans-serif; font-size: 12px;
+            font-weight: 800; cursor: pointer; transition: all 0.2s; display: none; text-align: center; letter-spacing: 2px;
+        }
+        .control-btn:hover { background: rgba(255, 255, 255, 0.1); color: white; }
+        
+        .pulse-btn { animation: pulseBtn 2s infinite; }
+        @keyframes pulseBtn { 0% { box-shadow: 0 0 0 0 rgba(77, 166, 255, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(77, 166, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(77, 166, 255, 0); } }
+
+        /* --- PROGRESS BAR --- */
+        .progress-bar-wrap { width: 100%; height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 3px; overflow: hidden; margin-bottom: 10px; display: none; }
+        #progress-fill { height: 100%; background: var(--nepc-blue); width: 0%; transition: width 0.4s ease; }
+
+        .screen { display: none; animation: fadeIn 0.3s ease-out; }
+        .screen.active { display: flex; flex-direction: column; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .shake { animation: shake 0.3s ease-in-out; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- INTRO SCREEN -->
+        <section id="intro-screen" class="screen active">
+            <div class="hero-container">
+                <div class="hero-grid"></div>
+                <div class="hero-bg-score">0-0-2</div>
+                <div class="hero-mini-court">
+                    <div class="hm-line hm-net"></div>
+                    <div class="hm-line hm-k-left"></div>
+                    <div class="hm-line hm-k-right"></div>
+                    <div class="hm-line hm-c-left"></div>
+                    <div class="hm-line hm-c-right"></div>
+                    
+                    <div class="hero-dot hd-serve" id="hero-server"></div>
+                    <div class="hero-dot hd-serve" id="hero-server-partner"></div>
+                    <div class="hero-dot hd-return" id="hero-returner"></div>
+                    <div class="hero-dot hd-return" id="hero-returner-partner"></div>
+                    <div class="hero-ball"></div>
+                </div>
+            </div>
+
+            <header style="border: none; padding: 0; text-align: center; margin-bottom: 8px;">
+                <h1 style="font-size: 22px; line-height: 1.3;">Master Basic Positioning and Scorekeeping</h1>
+            </header>
+
+            <div class="slim-instruction" style="text-align: center; border: none; background: transparent;">
+                <div class="instruction-text" style="color: rgba(255,255,255,0.7); font-weight: 400;">
+                    Pickleball scoring is famously unique. Watch the court carefully to understand how players move and how the serve rotates.
+                </div>
+            </div>
+            <div class="button-group" style="margin-top: 0;">
+                <button class="btn btn-primary pulse-btn" onclick="nextStep()" style="font-size: 14px; letter-spacing: 0.5px; min-height: 64px; flex-wrap: wrap;">
+                    START YOUR
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="var(--nepc-green)" xmlns="http://www.w3.org/2000/svg" style="margin: 0 6px; filter: drop-shadow(0 0 4px rgba(158, 240, 26, 0.6));">
+                        <circle cx="12" cy="12" r="10" fill="#9EF01A"/>
+                        <circle cx="8" cy="9" r="1.5" fill="#0A1A2F"/>
+                        <circle cx="16" cy="9" r="1.5" fill="#0A1A2F"/>
+                        <circle cx="12" cy="12" r="1.5" fill="#0A1A2F"/>
+                        <circle cx="8" cy="15" r="1.5" fill="#0A1A2F"/>
+                        <circle cx="16" cy="15" r="1.5" fill="#0A1A2F"/>
+                        <circle cx="12" cy="7" r="1.2" fill="#0A1A2F"/>
+                        <circle cx="12" cy="17" r="1.2" fill="#0A1A2F"/>
+                    </svg>
+                    JOURNEY HERE
+                </button>
+            </div>
+        </section>
+
+        <!-- SHARED COURT SCREEN -->
+        <section id="main-screen" class="screen">
+            <header><h1 id="screen-header">Positioning</h1></header>
+            
+            <div class="progress-bar-wrap" id="sim-progress"><div id="progress-fill"></div></div>
+
+            <!-- SLIM, PUNCHY INSTRUCTION BOX -->
+            <div class="slim-instruction" id="text-box">
+                <div id="step-id" class="step-label">Step 1</div>
+                <div id="step-text" class="instruction-text">Loading...</div>
+            </div>
+
+            <div class="court-wrapper">
+                <div class="court-container" id="court-area">
+                    <div class="kitchen-area kitchen-left-side"></div>
+                    <div class="kitchen-area kitchen-right-side"></div>
+                    
+                    <!-- White lines for Kitchen boundaries -->
+                    <div class="kitchen-line kl-left"></div>
+                    <div class="kitchen-line kl-right"></div>
+                    
+                    <div class="net-line"></div>
+                    <div class="center-line center-left"></div>
+                    <div class="center-line center-right"></div>
+                    
+                    <!-- Dynamic layer for visual storytelling (rings, popups) -->
+                    <div id="visual-layer" class="visual-layer"></div>
+
+                    <!-- Tooltips attached to players -->
+                    <div id="tt-p1" class="tooltip"></div>
+                    <div id="tt-p2" class="tooltip"></div>
+                    <div id="tt-p3" class="tooltip"></div>
+                    <div id="tt-p4" class="tooltip"></div>
+
+                    <div id="p1" class="player">1</div>
+                    <div id="p2" class="player">2</div>
+                    <div id="p3" class="player">3</div>
+                    <div id="p4" class="player">4</div>
+                    <div id="ball" class="ball"></div>
+                </div>
+            </div>
+
+            <!-- LESSON UI -->
+            <div id="lesson-ui">
+                <div id="score-display-area" class="score-explanation-card">
+                    <div class="score-box"><div id="s-val-1" class="score-num">0</div><div class="score-label">Serving<br>Team</div></div>
+                    <div class="score-box"><div id="s-val-2" class="score-num">0</div><div class="score-label">Receiving<br>Team</div></div>
+                    <div class="score-box"><div id="s-val-3" class="score-num">2</div><div class="score-label">Server<br>Number</div></div>
+                </div>
+                <div class="button-group">
+                    <button id="lesson-back-btn" class="btn btn-outline" onclick="prevStep()">&larr; Back</button>
+                    <button id="next-btn" class="btn btn-primary" onclick="nextStep()">Next &rarr;</button>
+                </div>
+                <button id="play-pause-btn" class="control-btn" onclick="togglePlayPause()">❚❚ PAUSE (SPACE)</button>
+            </div>
+
+            <!-- SIMULATOR UI -->
+            <div id="simulator-ui" style="display: none;">
+                <p style="font-family: 'Montserrat'; font-weight: 800; text-transform: uppercase; margin: 10px 0 5px 0; font-size: 14px; color: var(--nepc-blue); text-align: center;">What happens next?</p>
+                <div id="answer-options"></div>
+                <div id="sim-feedback" class="slim-instruction" style="display:none; margin-top: 10px; border-color: var(--success); background: rgba(40, 167, 69, 0.1);">
+                    <div id="sim-feedback-text" class="instruction-text" style="color: var(--success);">Correct!</div>
+                    <button class="btn btn-primary" style="margin-top: 12px; min-height: 48px;" onclick="nextScenario()">Next Scenario &rarr;</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TRANSITION SCREEN -->
+        <section id="transition-screen" class="screen">
+            <header><h1>Training Complete</h1></header>
+            <div class="slim-instruction" style="padding: 30px 20px;">
+                <div class="instruction-text">
+                    You've seen the rules in action. Now test your skills in the Scoring Simulator. 10 rapid-fire scenarios. Let's see what you've got.
+                </div>
+            </div>
+            <div class="button-group">
+                <button class="btn btn-primary pulse-btn" onclick="startSimulator()">Enter Simulator</button>
+            </div>
+        </section>
+
+        <!-- COMPLETION SCREEN -->
+        <section id="completion-screen" class="screen">
+            <header><h1>Simulator Complete</h1></header>
+            <div class="slim-instruction" style="text-align: center; padding: 30px 20px;">
+                <div class="step-label">FINAL SCORE</div>
+                <div id="final-score-val" style="font-size: 64px; font-family: 'Montserrat'; font-weight: 800; color: var(--nepc-blue); margin: 10px 0;">100</div>
+                <div id="final-rating" class="instruction-text">You're ready for the court.</div>
+            </div>
+            <a href="https://nepclub.com" target="_blank" class="btn btn-primary" style="margin-top:20px; text-decoration: none;">Play Pickleball at NEPC</a>
+            <div class="button-group">
+                <button class="btn btn-outline" onclick="prevStep()">&larr; Back</button>
+                <button onclick="location.reload()" class="btn btn-outline" style="border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.5);">Restart Module</button>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // --- ANIMATION CONTROLLER & HELPERS ---
+        let isPaused = false;
+        let currentAnimId = 0; 
+
+        // Robust sleep that respects pausing and cancellation
+        const sleep = (ms, animId) => new Promise(resolve => {
+            let timeElapsed = 0;
+            const interval = 20;
+            const timer = setInterval(() => {
+                if (animId && animId !== currentAnimId) {
+                    clearInterval(timer);
+                    resolve(false); // Cancelled by next/prev step
+                    return;
+                }
+                if (!isPaused) {
+                    timeElapsed += interval;
+                    if (timeElapsed >= ms) {
+                        clearInterval(timer);
+                        resolve(true); // Completed successfully
+                    }
+                }
+            }, interval);
+        });
+
+        function togglePlayPause() {
+            if (isPaused) resumeAnimations();
+            else pauseAnimations();
+        }
+
+        function pauseAnimations() {
+            isPaused = true;
+            document.getElementById('play-pause-btn').innerHTML = '▶ PLAY (SPACE)';
+            
+            // Freeze players and ball
+            ['ball', 'p1', 'p2', 'p3', 'p4'].forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                const comp = window.getComputedStyle(el);
+                
+                // Save targets and original transition
+                el.dataset.targetLeft = el.style.left;
+                el.dataset.targetTop = el.style.top;
+                el.dataset.transition = el.style.transition;
+                
+                // Set to current computed position and lock it
+                el.style.left = comp.getPropertyValue('left');
+                el.style.top = comp.getPropertyValue('top');
+                el.style.transition = 'none';
+            });
+
+            // Freeze CSS animations
+            document.querySelectorAll('.bounce-ring, .score-popup, .fault-popup').forEach(el => {
+                el.style.animationPlayState = 'paused';
+            });
+        }
+
+        function resumeAnimations() {
+            isPaused = false;
+            document.getElementById('play-pause-btn').innerHTML = '❚❚ PAUSE (SPACE)';
+            
+            // Resume players and ball
+            ['ball', 'p1', 'p2', 'p3', 'p4'].forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                
+                // Restore transition (ball is linear, players are ease)
+                el.style.transition = el.dataset.transition || 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                if (id === 'ball') el.style.transition = 'all 0.6s linear'; 
+                
+                // Send them to their intended targets
+                if (el.dataset.targetLeft) el.style.left = el.dataset.targetLeft;
+                if (el.dataset.targetTop) el.style.top = el.dataset.targetTop;
+            });
+
+            // Resume CSS animations
+            document.querySelectorAll('.bounce-ring, .score-popup, .fault-popup').forEach(el => {
+                el.style.animationPlayState = 'running';
+            });
+        }
+
+        function setBall(left, top, show=true) {
+            const ball = document.getElementById('ball');
+            ball.style.transition = 'none';
+            ball.style.display = show ? 'block' : 'none';
+            ball.style.left = left; ball.style.top = top;
+            void ball.offsetWidth; // Force reflow
+            ball.style.transition = 'all 0.6s linear';
+        }
+
+        async function moveBall(left, top, animId, duration=600) {
+            const ball = document.getElementById('ball');
+            ball.style.transition = `all ${duration}ms linear`;
+            ball.style.left = left; ball.style.top = top;
+            return await sleep(duration, animId);
+        }
+
+        function spawnBounceRing(left, top) {
+            const layer = document.getElementById('visual-layer');
+            const ring = document.createElement('div');
+            ring.className = 'bounce-ring';
+            ring.style.left = left; ring.style.top = top;
+            ring.style.animation = 'ping 1s ease-out forwards';
+            if(isPaused) ring.style.animationPlayState = 'paused';
+            layer.appendChild(ring);
+            setTimeout(() => { if(document.body.contains(ring)) ring.remove(); }, 1200);
+        }
+
+        function spawnScorePopup(left, top, text, color="var(--nepc-green)", isFault=false) {
+            const layer = document.getElementById('visual-layer');
+            const pop = document.createElement('div');
+            pop.className = 'score-popup';
+            if (isFault) pop.classList.add('fault-popup');
+            pop.style.left = left; pop.style.top = top;
+            pop.style.color = color;
+            pop.innerText = text;
+            pop.style.animationPlayState = isPaused ? 'paused' : 'running';
+            layer.appendChild(pop);
+            setTimeout(() => { if(document.body.contains(pop)) pop.remove(); }, 1700);
+        }
+
+        function setTooltips(tips) {
+            for(let i=1; i<=4; i++) {
+                const tt = document.getElementById(`tt-p${i}`);
+                if (tips[`p${i}`]) {
+                    tt.innerText = tips[`p${i}`];
+                    tt.classList.add('show');
+                } else {
+                    tt.classList.remove('show');
+                }
+            }
+        }
+
+        function updateTooltipPositions() {
+            for(let i=1; i<=4; i++) {
+                const p = document.getElementById(`p${i}`);
+                const tt = document.getElementById(`tt-p${i}`);
+                if (tt.classList.contains('show')) {
+                    let leftVal = parseFloat(p.style.left);
+                    tt.style.left = p.style.left;
+                    tt.style.top = p.style.top;
+                    
+                    // Dynamic offset to prevent screen cutoff on the edges
+                    if (leftVal > 85) {
+                        tt.style.transform = 'translate(-90%, -35px)';
+                        tt.style.setProperty('--arrow-left', '90%');
+                    } else if (leftVal < 15) {
+                        tt.style.transform = 'translate(-10%, -35px)';
+                        tt.style.setProperty('--arrow-left', '10%');
+                    } else {
+                        tt.style.transform = 'translate(-50%, -35px)';
+                        tt.style.setProperty('--arrow-left', '50%');
+                    }
+                }
+            }
+        }
+        setInterval(updateTooltipPositions, 50); // Keep tooltips pinned during movement
+
+        // --- KEYBOARD CONTROLS ---
+        document.addEventListener('keydown', (e) => {
+            // Ignore if user is typing in an input (just in case)
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+            if (e.code === 'Space') {
+                if (mode === 'lesson' && currentStep >= 0 && currentStep < steps.length) {
+                    e.preventDefault(); // Prevent page scroll
+                    togglePlayPause();
+                }
+            } else if (e.code === 'ArrowRight') {
+                if (currentStep === -1) {
+                    nextStep(); // Intro screen
+                } else if (mode === 'lesson' && !document.getElementById('next-btn').disabled) {
+                    nextStep();
+                } else if (mode === 'simulator' && document.getElementById('sim-feedback').style.display === 'block') {
+                    nextScenario();
+                }
+            } else if (e.code === 'ArrowLeft') {
+                if (mode === 'lesson' && !document.getElementById('lesson-back-btn').disabled) {
+                    prevStep();
+                } else if (document.getElementById('completion-screen').classList.contains('active')) {
+                    prevStep(); // Go back from completion screen
+                }
+            }
+        });
+
+        // --- PHASE 1: THE VISUAL LESSON DATA ---
+        const steps = [
+            {
+                header: "The Setup", step: "Starting Position",
+                text: "Purple serves. Blue returns.",
+                positions: { p1: {left: '108%', top: '25%'}, p2: {left: '108%', top: '75%'}, p3: {left: '-8%', top: '75%'}, p4: {left: '31%', top: '25%'} },
+                showScore: false,
+                tooltips: { p1: "Server", p4: "Returner's Partner" },
+                animSequence: async (id) => { setBall('100%', '25%', true); }
+            },
+            {
+                header: "The Serve Target", step: "Clearing the line",
+                text: "The serve must land diagonally, completely past the Kitchen line. Landing ON the kitchen line is a fault! Landing on any other line is IN.",
+                positions: { p1: {left: '108%', top: '25%'}, p2: {left: '108%', top: '75%'}, p3: {left: '-8%', top: '75%'}, p4: {left: '31%', top: '25%'} },
+                showScore: false,
+                tooltips: { p1: "Serves Diagonal" },
+                animSequence: async (id) => {
+                    setBall('108%', '25%', true); 
+                    if (!await sleep(500, id)) return;
+                    
+                    // Bad Serve (Landing on the kitchen line, completely clear of the center line)
+                    if (!await moveBall('34.1%', '75%', id)) return; 
+                    spawnScorePopup('34.1%', '75%', 'FAULT: ON LINE!', 'var(--nepc-red)', true);
+                    if (!await sleep(1500, id)) return;
+                    
+                    // Good Serve
+                    setBall('108%', '25%', true); 
+                    if (!await sleep(500, id)) return;
+                    if (!await moveBall('15%', '75%', id)) return; 
+                    spawnBounceRing('15%', '75%');
+                    spawnScorePopup('15%', '75%', 'GOOD SERVE', 'var(--nepc-green)');
+                }
+            },
+            {
+                header: "The Two-Bounce Rule", step: "Watch the ball",
+                text: "The ball must bounce once on each side before anyone can hit it in the air.",
+                positions: { p1: {left: '108%', top: '25%'}, p2: {left: '108%', top: '75%'}, p3: {left: '-8%', top: '75%'}, p4: {left: '31%', top: '25%'} },
+                showScore: false,
+                tooltips: { p1: "Stays back", p3: "Stays back" },
+                animSequence: async (id) => {
+                    setBall('108%', '25%', true); 
+                    if (!await sleep(500, id)) return;
+                    if (!await moveBall('15%', '75%', id)) return; 
+                    spawnBounceRing('15%', '75%'); // Bounce 1
+                    if (!await sleep(300, id)) return;
+                    if (!await moveBall('85%', '25%', id)) return; 
+                    spawnBounceRing('85%', '25%'); // Bounce 2
+                    if (!await sleep(300, id)) return;
+                    await moveBall('108%', '25%', id); // Return to sender
+                }
+            },
+            {
+                header: "The Return & Run", step: "Closing the gap",
+                text: "After returning the serve, Player 3 immediately runs to the kitchen line.",
+                positions: { p1: {left: '108%', top: '25%'}, p2: {left: '108%', top: '75%'}, p3: {left: '-8%', top: '75%'}, p4: {left: '31%', top: '25%'} },
+                showScore: false,
+                tooltips: { p3: "Hit & Run!" },
+                animSequence: async (id) => {
+                    setBall('108%', '25%', true); 
+                    if (!await sleep(300, id)) return;
+                    if (!await moveBall('-8%', '75%', id)) return; // Serve
+                    if (!await sleep(200, id)) return;
+                    
+                    moveBall('85%', '25%', id); // Hit deep
+                    document.getElementById('p3').style.left = '31%'; // P3 Runs
+                    if (!await sleep(800, id)) return;
+                    document.getElementById('p3').style.left = '-8%'; // Reset for next loop
+                }
+            },
+            {
+                header: "The Kitchen Rule", step: "No Volley Zone",
+                text: "You cannot hit the ball out of the air (volley) while touching the Kitchen zone.",
+                positions: { p1: {left: '108%', top: '25%'}, p2: {left: '108%', top: '75%'}, p3: {left: '31%', top: '75%'}, p4: {left: '31%', top: '25%'} },
+                showScore: false,
+                tooltips: { p4: "Volleying from Kitchen" },
+                animSequence: async (id) => {
+                    setBall('85%', '75%', true); 
+                    if (!await sleep(500, id)) return;
+                    
+                    // Bad volley
+                    document.getElementById('p4').style.left = '45%'; // Steps into kitchen
+                    if (!await moveBall('45%', '25%', id)) return; 
+                    spawnScorePopup('45%', '25%', 'KITCHEN VIOLATION!', 'var(--nepc-red)', true);
+                    if (!await sleep(1500, id)) return;
+                    document.getElementById('p4').style.left = '31%'; // Steps back out
+                }
+            },
+            {
+                header: "The Golden Rule", step: "Scoring Logic",
+                text: "Only the serving team can score points.",
+                positions: { p1: {left: '108%', top: '25%'}, p2: {left: '108%', top: '75%'}, p3: {left: '31%', top: '75%'}, p4: {left: '31%', top: '25%'} },
+                showScore: true, score: [0, 0, 2],
+                tooltips: { p1: "Serving Team", p3: "Receiving Team" },
+                animSequence: async (id) => {
+                    setBall('108%', '25%', true); 
+                    if (!await sleep(500, id)) return;
+                    if (!await moveBall('31%', '75%', id)) return; 
+                    if (!await moveBall('108%', '25%', id)) return; // quick rally
